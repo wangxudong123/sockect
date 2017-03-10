@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+<body>
+<div class="head"></div>
+<div id="wrapper">
+    <div id="message">
+
+    </div>
+    <div id="action">
+        <textarea id="data" ></textarea>
+        <button id="send">发送</button>
+    </div>
+
+</div>
+
+<script>
+    (function() {
+
+        var socket = new WebSocket('ws://127.0.0.1:8008');
+        var send = document.getElementById('send');
+        var data = document.getElementById('data');
+        var message = document.getElementById('message');
+        var wrapper = document.getElementById('wrapper');
+        var height = (wrapper.offsetHeight) -270;
+
+        message.style.height = height+'px';
+        socket.onopen = function(event) {
+            message.innerHTML = '<p><span>连接成功！</span></p>';
+        }
+
+        socket.onmessage = function(event) {
+            var dl = document.createElement('dl');
+            var jsonData = JSON.parse(event.data);
+            dl.innerHTML =  "<dt><img src="+jsonData.avatar+"><dt><dd><span></span>"+jsonData.content+"</dd>";
+            message.appendChild(dl);
+            message.scrollTop = message.scrollHeight;
+        }
+
+        socket.onerror = function() {
+            message.innerHTML = '<p><span>连接失败！</span></p>';
+        }
+
+        send.addEventListener('click', function() {
+
+            var content = data.value;
+            if(content.length <= 0) {
+                alert('消息不能为空！');
+                return false;
+            }
+
+            var avatar = Math.random();
+            var message = {
+                "avatar" : 'images/avatar.jpg',
+                "content" : content
+            }
+
+            var json = JSON.stringify(message);
+            socket.send(json);
+
+            data.value = '';
+            data.focus();
+
+        });
+    })();
+</script>
+</body>
+</html>
