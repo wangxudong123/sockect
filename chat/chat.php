@@ -228,6 +228,7 @@ $key...ok
 
 }
 
+//如果放在服务器下启动websocket 绑定端口失败,把new WebSocket(0, 8008, 100000)
 $webSocket = new WebSocket('127.0.0.1', 8008, 100000);
 $webSocket->start();
 
